@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -10,25 +11,33 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['read:user']],
+    denormalizationContext: ['groups' => ['write:user']],
+)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['read:user'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['read:user', 'write:user'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['read:user', 'write:user'])]
     private ?string $lastname = null;
 
     #[ORM\Column(length: 100)]
+    #[Groups(['read:user', 'write:user'])]
     private ?string $email = null;
-
+    
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
@@ -55,6 +64,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->promotions = new ArrayCollection();
         $this->categories = new ArrayCollection();
         $this->products = new ArrayCollection();
+        $this->createdAt = new \DateTime();
     }
 
     public function getId(): ?int
@@ -240,22 +250,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-    * @see UserInterface
-     */
     public function eraseCredentials()
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
     }
 
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
+    }
+
+    #[ApiProperty(types: ["https://schema.org/name"])]
+    #[Groups(['read:user', 'read:category', 'read:product', 'read:promotion'])]
+    public function getFullName(): string
+    {
+        return $this->firstname . ' ' . $this->lastname;
     }
 }

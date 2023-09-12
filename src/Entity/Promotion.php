@@ -6,23 +6,31 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\PromotionRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PromotionRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['read:promotion']],
+    denormalizationContext: ['groups' => ['write:promotion']],
+)]
 class Promotion
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['read:promotion'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(['read:promotion', 'write:promotion'])]
     private ?\DateTimeInterface $startDate = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(['read:promotion', 'write:promotion'])]
     private ?\DateTimeInterface $endDate = null;
 
     #[ORM\Column(type: Types::SMALLINT)]
+    #[Groups(['read:promotion', 'write:promotion'])]
     private ?int $discountPercentage = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
@@ -33,7 +41,13 @@ class Promotion
 
     #[ORM\ManyToOne(inversedBy: 'promotions')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['read:promotion', 'write:promotion'])]
     private ?User $user = null;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime();
+    }
 
     public function getId(): ?int
     {

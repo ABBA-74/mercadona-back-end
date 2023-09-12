@@ -8,17 +8,23 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['read:category']],
+    denormalizationContext: ['groups' => ['write:category']],
+)]
 class Category
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['read:category'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
+    #[Groups(['read:category', 'write:category', 'read:product'])]
     private ?string $label = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
@@ -32,6 +38,7 @@ class Category
 
     #[ORM\ManyToOne(inversedBy: 'categories')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['write:category', 'read:category'])]
     private ?User $user = null;
 
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Product::class)]
@@ -40,6 +47,7 @@ class Category
     public function __construct()
     {
         $this->products = new ArrayCollection();
+        $this->createdAt = new \DateTime();
     }
 
     public function getId(): ?int
