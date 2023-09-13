@@ -42,6 +42,7 @@ class Product
     private ?\DateTimeInterface $updatedAt = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[Groups(['read:product'])]
     private ?Image $image = null;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
@@ -55,6 +56,7 @@ class Product
     private ?User $user = null;
 
     #[ORM\ManyToMany(targetEntity: Promotion::class, inversedBy: 'products')]
+    #[Groups(['read:product'])]
     private Collection $promotions;
 
     public function __construct()

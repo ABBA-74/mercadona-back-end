@@ -52,7 +52,7 @@ class Image
     private ?File $imageFile = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(['read:image', 'write:image'])]
+    #[Groups(['read:image', 'write:image', 'read:product'])]
     private ?string $label = null;
     
     #[ORM\Column(length: 100)]

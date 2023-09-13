@@ -29,7 +29,7 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
                 ->setUser($this->getReference('admin_' . $faker->numberBetween(1, 10)))
                 ->setCategory($this->getReference('category_' . $j));
 
-            if ($i % 4) {
+            if (!($i % 4)) {
                 $j++;
             }
             if ($faker->boolean(70)) {

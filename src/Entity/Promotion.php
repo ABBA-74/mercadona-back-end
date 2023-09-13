@@ -24,15 +24,15 @@ class Promotion
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(['read:promotion', 'write:promotion'])]
+    #[Groups(['read:promotion', 'write:promotion', 'read:product'])]
     private ?\DateTimeInterface $startDate = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(['read:promotion', 'write:promotion'])]
+    #[Groups(['read:promotion', 'write:promotion', 'read:product'])]
     private ?\DateTimeInterface $endDate = null;
 
     #[ORM\Column(type: Types::SMALLINT)]
-    #[Groups(['read:promotion', 'write:promotion'])]
+    #[Groups(['read:promotion', 'write:promotion', 'read:product'])]
     private ?int $discountPercentage = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
