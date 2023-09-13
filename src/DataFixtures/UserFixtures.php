@@ -36,12 +36,12 @@ class UserFixtures extends Fixture
             if ($i < 3) {
                 $user->setPassword($this->hasher->hashPassword($user, 'super-admin'))
                     ->setRoles(['ROLE_SUPER_ADMIN']);
-                $this->addReference('super_admin_' . $i, $user);
             } else {
                 $user->setPassword($this->hasher->hashPassword($user, 'admin'))
-                ->setRoles(['ROLE_ADMIN']);
-                $this->addReference('admin_' . $i - 2, $user);
+                    ->setRoles(['ROLE_ADMIN']);
             }
+            $this->addReference('admin_' . $i, $user);
+            
             $manager->persist($user);
         }
         $manager->flush();
