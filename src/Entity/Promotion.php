@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\PromotionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -44,9 +46,13 @@ class Promotion
     #[Groups(['read:promotion', 'write:promotion'])]
     private ?User $user = null;
 
+    #[ORM\ManyToMany(targetEntity: Product::class, mappedBy: 'promotions')]
+    private Collection $products;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
+        $this->products = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -122,6 +128,33 @@ class Promotion
     public function setUser(?User $user): static
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Product>
+     */
+    public function getProducts(): Collection
+    {
+        return $this->products;
+    }
+
+    public function addProduct(Product $product): static
+    {
+        if (!$this->products->contains($product)) {
+            $this->products->add($product);
+            $product->addPromotion($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProduct(Product $product): static
+    {
+        if ($this->products->removeElement($product)) {
+            $product->removePromotion($this);
+        }
 
         return $this;
     }

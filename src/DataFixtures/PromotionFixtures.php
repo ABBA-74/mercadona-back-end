@@ -14,14 +14,16 @@ class PromotionFixtures extends Fixture implements DependentFixtureInterface
     {
         $faker = Factory::create('fr_FR');
 
-        for ($i=0; $i < 10 ; $i++) { 
+        for ($i = 1; $i <= 10 ; $i++) {
             $promotion = new Promotion;
 
             $promotion->setStartDate($faker->dateTimeBetween('1 week', '1 month'))
                 ->setEndDate($faker->dateTimeBetween('1 month', '4 month'))
-                ->setDiscountPercentage($faker->numberBetween(10,50))
+                ->setDiscountPercentage($faker->numberBetween(10, 50))
                 ->setCreatedAt($faker->dateTimeBetween('-3 week', '-4 days'))
-                ->setUser($this->getReference('admin_' . $faker->numberBetween(1,8)));
+                ->setUser($this->getReference('admin_' . $faker->numberBetween(1, 10)));
+            $this->addReference('promotion_' . $i, $promotion);
+
             $manager->persist($promotion);
         }
         $manager->flush();
