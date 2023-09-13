@@ -23,13 +23,13 @@ class UserUnitTest extends TestCase
             ->setCreatedAt($date)
             ->setUpdatedAt($date);
 
-        $this->assertSame($user->getFirstname(),'firstname');
-        $this->assertSame($user->getLastname(), 'lastname');
-        $this->assertSame($user->getEmail(), 'test@test.com');
-        $this->assertSame($user->getPassword(), 'password');
-        $this->assertSame($user->getRoles(), ['ROLE_TEST', 'ROLE_USER']);
-        $this->assertSame($user->getCreatedAt(), $date);
-        $this->assertSame($user->getUpdatedAt(), $date);
+        $this->assertSame('firstname', $user->getFirstname());
+        $this->assertSame('lastname', $user->getLastname(), );
+        $this->assertSame('test@test.com', $user->getEmail());
+        $this->assertSame('password', $user->getPassword());
+        $this->assertSame(['ROLE_TEST', 'ROLE_USER'], $user->getRoles());
+        $this->assertSame($date, $user->getCreatedAt());
+        $this->assertSame($date, $user->getUpdatedAt());
     }
 
     public function testIsFalse(): void
@@ -45,13 +45,13 @@ class UserUnitTest extends TestCase
             ->setCreatedAt($date)
             ->setUpdatedAt($date);
 
-            $this->assertNotSame($user->getFirstname(), 'false');
-            $this->assertNotSame($user->getLastname(), 'false');
-            $this->assertNotSame($user->getEmail(), 'false@false.com');
-            $this->assertNotSame($user->getPassword(), 'false');
-            $this->assertNotSame($user->getRoles(), ['ROLE_FALSE']);
-            $this->assertNotSame($user->getCreatedAt(), null);
-            $this->assertNotSame($user->getUpdatedAt(), null);
+            $this->assertNotSame('false', $user->getFirstname());
+            $this->assertNotSame('false', $user->getLastname());
+            $this->assertNotSame('false@false.com', $user->getEmail());
+            $this->assertNotSame('false', $user->getPassword());
+            $this->assertNotSame(['ROLE_FALSE'], $user->getRoles());
+            $this->assertNotSame(null, $user->getCreatedAt());
+            $this->assertNotSame(null, $user->getUpdatedAt());
     }
 
     public function testIsEmpty(): void
