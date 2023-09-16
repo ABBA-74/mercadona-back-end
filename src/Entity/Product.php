@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Entity\Traits\CommonDate;
 use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -25,8 +26,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[Post()]
 #[Put()]
 #[Delete()]
+#[ORM\HasLifecycleCallbacks]
 class Product
 {
+    use CommonDate;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -114,30 +118,6 @@ class Product
     public function setPrice(string $price): static
     {
         $this->price = $price;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeInterface $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeInterface
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?\DateTimeInterface $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
 
         return $this;
     }

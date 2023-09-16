@@ -7,10 +7,10 @@ use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\ApiProperty;
+use App\Entity\Traits\CommonDate;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -24,8 +24,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[Get()]
 #[GetCollection()]
 #[Delete()]
+#[ORM\HasLifecycleCallbacks]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    use CommonDate;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -50,14 +53,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     #[Groups(['read:user'])]
     private ?array $roles = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(['read:user'])]
-    private ?\DateTimeInterface $createdAt = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    #[Groups(['read:user'])]
-    private ?\DateTimeInterface $updatedAt = null;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Promotion::class)]
     private Collection $promotions;
@@ -141,30 +136,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeInterface $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeInterface
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?\DateTimeInterface $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
 
         return $this;
     }

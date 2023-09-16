@@ -8,10 +8,10 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Entity\Traits\CommonDate;
 use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -25,8 +25,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[Post()]
 #[Put()]
 #[Delete()]
+#[ORM\HasLifecycleCallbacks]
 class Category
 {
+    use CommonDate;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -36,13 +39,6 @@ class Category
     #[ORM\Column(length: 100)]
     #[Groups(['read:category', 'write:category', 'read:product'])]
     private ?string $label = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(['read:category'])]
-    private ?\DateTimeInterface $createdAt = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $updatedAt = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[Groups(['read:category', 'write:category'])]
@@ -75,30 +71,6 @@ class Category
     public function setLabel(string $label): static
     {
         $this->label = $label;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeInterface $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeInterface
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?\DateTimeInterface $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
 
         return $this;
     }
