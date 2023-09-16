@@ -3,6 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -15,6 +20,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
     normalizationContext: ['groups' => ['read:product']],
     denormalizationContext: ['groups' => ['write:product']],
 )]
+#[Get()]
+#[GetCollection()]
+#[Post()]
+#[Put()]
+#[Delete()]
 class Product
 {
     #[ORM\Id]
@@ -24,7 +34,7 @@ class Product
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(['read:product', 'write:product'])]
+    #[Groups(['read:product', 'write:product', 'read:promotion'])]
     private ?string $label = null;
 
     #[ORM\Column(type: Types::TEXT)]
@@ -36,13 +46,15 @@ class Product
     private ?string $price = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(['read:product'])]
     private ?\DateTimeInterface $createdAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(['read:product'])]
     private ?\DateTimeInterface $updatedAt = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[Groups(['read:product'])]
+    #[Groups(['read:product', 'write:product'])]
     private ?Image $image = null;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
@@ -169,6 +181,7 @@ class Product
     /**
      * @return Collection<int, Promotion>
      */
+    #[Groups(['read:product'])]
     public function getPromotions(): Collection
     {
         return $this->promotions;

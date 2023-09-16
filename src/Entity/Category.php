@@ -3,6 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -15,6 +20,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
     normalizationContext: ['groups' => ['read:category']],
     denormalizationContext: ['groups' => ['write:category']],
 )]
+#[Get()]
+#[GetCollection()]
+#[Post()]
+#[Put()]
+#[Delete()]
 class Category
 {
     #[ORM\Id]
@@ -28,17 +38,19 @@ class Category
     private ?string $label = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(['read:category'])]
     private ?\DateTimeInterface $createdAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $updatedAt = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[Groups(['read:category', 'write:category'])]
     private ?Image $image = null;
 
     #[ORM\ManyToOne(inversedBy: 'categories')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['write:category', 'read:category'])]
+    #[Groups(['read:category', 'write:category'])]
     private ?User $user = null;
 
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Product::class)]

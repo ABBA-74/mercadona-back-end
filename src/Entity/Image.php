@@ -2,18 +2,14 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Delete;
 use App\Repository\ImageRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
-use ApiPlatform\OpenApi\Model;
+use ApiPlatform\Metadata\Delete;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
@@ -23,21 +19,14 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
 #[ApiResource(
     normalizationContext: ['groups' => ['read:image']],
-
-    operations: [
-        new Put(
-            denormalizationContext: ['groups' => ['write:image']],
-            inputFormats: ['multipart' => ['multipart/form-data']]
-        ),
-        new Delete(),
-        new Get(),
-        new GetCollection(),
-        new Post(
-            denormalizationContext: ['groups' => ['write:image']],
-            inputFormats: ['multipart' => ['multipart/form-data']]
-        )
-    ]
+    denormalizationContext: ['groups' => ['write:image']]
 )]
+#[Get()]
+#[GetCollection()]
+#[Post(
+    inputFormats: ['multipart' => ['multipart/form-data']]
+)]
+#[Delete()]
 class Image
 {
     #[ORM\Id]
@@ -52,7 +41,7 @@ class Image
     private ?File $imageFile = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(['read:image', 'write:image', 'read:product'])]
+    #[Groups(['read:image', 'write:image', 'read:product', 'read:category'])]
     private ?string $label = null;
     
     #[ORM\Column(length: 100)]
@@ -60,10 +49,11 @@ class Image
     private ?string $description = null;
     
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['read:image', 'read:category', 'read:product'])]
+    #[Groups(['read:image', 'read:category', 'read:product', 'read:category'])]
     private ?string $imgFile = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(['read:image'])]
     private ?\DateTimeInterface $createdAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]

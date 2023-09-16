@@ -3,6 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\PromotionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -15,6 +20,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
     normalizationContext: ['groups' => ['read:promotion']],
     denormalizationContext: ['groups' => ['write:promotion']],
 )]
+#[Get()]
+#[GetCollection()]
+#[Post()]
+#[Put()]
+#[Delete()]
 class Promotion
 {
     #[ORM\Id]
@@ -36,9 +46,11 @@ class Promotion
     private ?int $discountPercentage = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(['read:promotion'])]
     private ?\DateTimeInterface $createdAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(['read:promotion'])]
     private ?\DateTimeInterface $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'promotions')]
@@ -47,6 +59,7 @@ class Promotion
     private ?User $user = null;
 
     #[ORM\ManyToMany(targetEntity: Product::class, mappedBy: 'promotions')]
+    #[Groups(['read:promotion', 'write:promotion'])]
     private Collection $products;
 
     public function __construct()
