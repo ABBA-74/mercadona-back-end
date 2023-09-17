@@ -78,7 +78,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     #[Groups(['read:user'])]
-    private ?array $roles = null;
+    private ?array $roles = [];
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Promotion::class)]
     private Collection $promotions;
