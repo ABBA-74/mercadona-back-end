@@ -2,6 +2,9 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -28,6 +31,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[Post()]
 #[Put()]
 #[Delete()]
+#[ApiFilter(SearchFilter::class, properties: ['label' => 'partial', 'category' => 'exact'])]
+#[ApiFilter(DateFilter::class, properties: ['createdAt'])]
 #[ORM\HasLifecycleCallbacks]
 class Product
 {
