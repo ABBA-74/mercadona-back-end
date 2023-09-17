@@ -20,7 +20,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(
     normalizationContext: ['groups' => ['read:user']],
-    denormalizationContext: ['groups' => ['write:user']]
+    denormalizationContext: ['groups' => ['write:user']],
+    paginationItemsPerPage: 8
 )]
 #[Get()]
 #[GetCollection()]

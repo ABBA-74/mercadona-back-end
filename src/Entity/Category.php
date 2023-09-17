@@ -20,6 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     normalizationContext: ['groups' => ['read:category']],
     denormalizationContext: ['groups' => ['write:category']],
+    paginationItemsPerPage: 8
 )]
 #[Get()]
 #[GetCollection()]

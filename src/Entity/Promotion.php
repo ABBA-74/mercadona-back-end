@@ -21,6 +21,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     normalizationContext: ['groups' => ['read:promotion']],
     denormalizationContext: ['groups' => ['write:promotion']],
+    paginationItemsPerPage: 8
 )]
 #[Get()]
 #[GetCollection()]

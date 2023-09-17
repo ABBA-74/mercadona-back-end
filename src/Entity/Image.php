@@ -19,7 +19,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
 #[ApiResource(
     normalizationContext: ['groups' => ['read:image']],
-    denormalizationContext: ['groups' => ['write:image']]
+    denormalizationContext: ['groups' => ['write:image']],
+    paginationItemsPerPage: 8
 )]
 #[Get()]
 #[GetCollection()]
