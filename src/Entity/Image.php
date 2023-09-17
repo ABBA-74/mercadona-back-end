@@ -13,6 +13,7 @@ use App\Entity\Traits\CommonDate;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[Vich\Uploadable]
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
@@ -38,16 +39,36 @@ class Image
     private ?int $id = null;
 
     #[Vich\UploadableField(mapping: "media_object", fileNameProperty: "imgFile")]
-    // #[Assert\NotNull]
+    #[Assert\NotBlank(message: "Le fichier ne doit pas être vide")]
+    #[Assert\File(
+        maxSize: '2M',
+        extensions: ['jpg', 'jpeg', 'png', 'webp', 'svg'],
+        extensionsMessage: 'Format de fichier invalide',
+        maxSizeMessage: 'Fichier trop volumineux (max: 2 Mo)'
+    )]
     #[Groups(['write:image'])]
     private ?File $imageFile = null;
 
     #[ORM\Column(length: 100)]
     #[Groups(['read:image', 'write:image', 'read:product', 'read:category'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+    min: 2,
+    max: 100,
+    minMessage: "Le label doit comporter au moins {{ limit }} caractères",
+    maxMessage: "Le label ne peut pas dépasser {{ limit }} caractères",
+    )]
     private ?string $label = null;
     
     #[ORM\Column(length: 100)]
     #[Groups(['read:image', 'write:image'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+    min: 2,
+    max: 100,
+    minMessage: "La description doit comporter au moins {{ limit }} caractères",
+    maxMessage: "La description ne peut pas dépasser {{ limit }} caractères",
+    )]
     private ?string $description = null;
     
     #[ORM\Column(length: 255, nullable: true)]

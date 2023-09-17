@@ -14,6 +14,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ApiResource(
@@ -38,6 +39,13 @@ class Category
 
     #[ORM\Column(length: 100)]
     #[Groups(['read:category', 'write:category', 'read:product'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+    min: 2,
+    max: 100,
+    minMessage: "Le label doit comporter au moins {{ limit }} caractères",
+    maxMessage: "Le label ne peut pas dépasser {{ limit }} caractères",
+    )]
     private ?string $label = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]

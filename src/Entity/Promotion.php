@@ -15,6 +15,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PromotionRepository::class)]
 #[ApiResource(
@@ -39,14 +40,29 @@ class Promotion
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups(['read:promotion', 'write:promotion', 'read:product'])]
+    #[Assert\Range(
+        min: 'now',
+        max: '+2 year',
+        notInRangeMessage: "Choisir une date entre aujourd'hui et 2 an maximum",
+    )]
     private ?\DateTimeInterface $startDate = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups(['read:promotion', 'write:promotion', 'read:product'])]
+    #[Assert\Range(
+        min: 'now',
+        max: '+2 year',
+        notInRangeMessage: "Choisir une date entre aujourd'hui et 2 an maximum"
+    )]
     private ?\DateTimeInterface $endDate = null;
 
     #[ORM\Column(type: Types::SMALLINT)]
     #[Groups(['read:promotion', 'write:promotion', 'read:product'])]
+    #[Assert\NotBlank]
+    #[Assert\Regex(
+    pattern: "/^(100(\.0)?|[1-9]?\d(\.\d)?)$/",
+    message: "Le format de promotion n'est pas valide. Ex: 50.5",
+    )]
     private ?int $discountPercentage = null;
 
     #[ORM\ManyToOne(inversedBy: 'promotions')]

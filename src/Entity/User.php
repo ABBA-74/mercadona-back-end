@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(
@@ -37,14 +38,38 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 50)]
     #[Groups(['write:user'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+    min: 2,
+    max: 50,
+    minMessage: "Le prénom doit comporter au moins {{ limit }} caractères",
+    maxMessage: "Le prénom ne peut pas dépasser {{ limit }} caractères",
+    )]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 50)]
     #[Groups(['write:user'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+    min: 2,
+    max: 50,
+    minMessage: "Le nom doit comporter au moins {{ limit }} caractères",
+    maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères",
+    )]
     private ?string $lastname = null;
 
     #[ORM\Column(length: 100)]
     #[Groups(['read:user', 'write:user'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        min: 5,
+        max: 100,
+        minMessage: "L'e-mail doit comporter au moins {{ limit }} caractères",
+        maxMessage: "L'e-mail ne peut pas dépasser {{ limit }} caractères",
+        )]
+    #[Assert\Email(
+    message: "L'adresse e-mail n'est pas valide",
+    )]
     private ?string $email = null;
     
     #[ORM\Column(length: 255)]

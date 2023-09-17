@@ -15,6 +15,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ApiResource(
@@ -39,23 +40,31 @@ class Product
 
     #[ORM\Column(length: 100)]
     #[Groups(['read:product', 'write:product', 'read:promotion'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+    min: 2,
+    max: 100,
+    minMessage: "Le label doit comporter au moins {{ limit }} caractères",
+    maxMessage: "Le label ne peut pas dépasser {{ limit }} caractères",
+    )]
     private ?string $label = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Groups(['read:product', 'write:product'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+    min: 2,
+    max: 200,
+    minMessage: "La description doit comporter au moins {{ limit }} caractères",
+    maxMessage: "La description ne peut pas dépasser {{ limit }} caractères",
+    )]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
     #[Groups(['read:product', 'write:product'])]
+    #[Assert\NotBlank]
+    #[Assert\Type("numeric")]
     private ?string $price = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(['read:product'])]
-    private ?\DateTimeInterface $createdAt = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    #[Groups(['read:product'])]
-    private ?\DateTimeInterface $updatedAt = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[Groups(['read:product', 'write:product'])]
