@@ -3,20 +3,36 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use App\Entity\Traits\CommonDate;
 use App\Repository\PromotionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PromotionRepository::class)]
 #[ApiResource(
     normalizationContext: ['groups' => ['read:promotion']],
     denormalizationContext: ['groups' => ['write:promotion']],
+    paginationItemsPerPage: 8
 )]
+#[Get()]
+#[GetCollection()]
+#[Post()]
+#[Put()]
+#[Delete()]
+#[ORM\HasLifecycleCallbacks]
 class Promotion
 {
+    use CommonDate;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -25,21 +41,30 @@ class Promotion
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups(['read:promotion', 'write:promotion', 'read:product'])]
+    #[Assert\Range(
+        min: 'now',
+        max: '+2 year',
+        notInRangeMessage: "Choisir une date entre aujourd'hui et 2 an maximum",
+    )]
     private ?\DateTimeInterface $startDate = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups(['read:promotion', 'write:promotion', 'read:product'])]
+    #[Assert\Range(
+        min: 'now',
+        max: '+2 year',
+        notInRangeMessage: "Choisir une date entre aujourd'hui et 2 an maximum"
+    )]
     private ?\DateTimeInterface $endDate = null;
 
     #[ORM\Column(type: Types::SMALLINT)]
     #[Groups(['read:promotion', 'write:promotion', 'read:product'])]
+    #[Assert\NotBlank]
+    #[Assert\Regex(
+    pattern: "/^(100(\.0)?|[1-9]?\d(\.\d)?)$/",
+    message: "Le format de promotion n'est pas valide. Ex: 50.5",
+    )]
     private ?int $discountPercentage = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $createdAt = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'promotions')]
     #[ORM\JoinColumn(nullable: false)]
@@ -47,6 +72,7 @@ class Promotion
     private ?User $user = null;
 
     #[ORM\ManyToMany(targetEntity: Product::class, mappedBy: 'promotions')]
+    #[Groups(['read:promotion', 'write:promotion'])]
     private Collection $products;
 
     public function __construct()
@@ -92,30 +118,6 @@ class Promotion
     public function setDiscountPercentage(int $discountPercentage): static
     {
         $this->discountPercentage = $discountPercentage;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeInterface $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeInterface
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?\DateTimeInterface $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
 
         return $this;
     }

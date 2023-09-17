@@ -2,24 +2,35 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\ApiProperty;
+use App\Entity\Traits\CommonDate;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(
     normalizationContext: ['groups' => ['read:user']],
     denormalizationContext: ['groups' => ['write:user']],
+    paginationItemsPerPage: 8
 )]
+#[Get()]
+#[GetCollection()]
+#[Delete()]
+#[ORM\HasLifecycleCallbacks]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    use CommonDate;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -27,28 +38,47 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
-    #[Groups(['read:user', 'write:user'])]
+    #[Groups(['write:user'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+    min: 2,
+    max: 50,
+    minMessage: "Le prénom doit comporter au moins {{ limit }} caractères",
+    maxMessage: "Le prénom ne peut pas dépasser {{ limit }} caractères",
+    )]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 50)]
-    #[Groups(['read:user', 'write:user'])]
+    #[Groups(['write:user'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+    min: 2,
+    max: 50,
+    minMessage: "Le nom doit comporter au moins {{ limit }} caractères",
+    maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères",
+    )]
     private ?string $lastname = null;
 
     #[ORM\Column(length: 100)]
     #[Groups(['read:user', 'write:user'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        min: 5,
+        max: 100,
+        minMessage: "L'e-mail doit comporter au moins {{ limit }} caractères",
+        maxMessage: "L'e-mail ne peut pas dépasser {{ limit }} caractères",
+        )]
+    #[Assert\Email(
+    message: "L'adresse e-mail n'est pas valide",
+    )]
     private ?string $email = null;
     
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
     #[ORM\Column]
+    #[Groups(['read:user'])]
     private ?array $roles = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $createdAt = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $updatedAt = null;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Promotion::class)]
     private Collection $promotions;
@@ -132,30 +162,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeInterface $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeInterface
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?\DateTimeInterface $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
 
         return $this;
     }

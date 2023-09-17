@@ -2,18 +2,14 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Delete;
 use App\Repository\ImageRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
-use ApiPlatform\OpenApi\Model;
+use ApiPlatform\Metadata\Delete;
+use App\Entity\Traits\CommonDate;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
@@ -23,23 +19,20 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
 #[ApiResource(
     normalizationContext: ['groups' => ['read:image']],
-
-    operations: [
-        new Put(
-            denormalizationContext: ['groups' => ['write:image']],
-            inputFormats: ['multipart' => ['multipart/form-data']]
-        ),
-        new Delete(),
-        new Get(),
-        new GetCollection(),
-        new Post(
-            denormalizationContext: ['groups' => ['write:image']],
-            inputFormats: ['multipart' => ['multipart/form-data']]
-        )
-    ]
+    denormalizationContext: ['groups' => ['write:image']],
+    paginationItemsPerPage: 8
 )]
+#[Get()]
+#[GetCollection()]
+#[Post(
+    inputFormats: ['multipart' => ['multipart/form-data']]
+)]
+#[Delete()]
+#[ORM\HasLifecycleCallbacks]
 class Image
 {
+    use CommonDate;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -47,27 +40,41 @@ class Image
     private ?int $id = null;
 
     #[Vich\UploadableField(mapping: "media_object", fileNameProperty: "imgFile")]
-    // #[Assert\NotNull]
+    #[Assert\NotBlank(message: "Le fichier ne doit pas être vide")]
+    #[Assert\File(
+        maxSize: '2M',
+        extensions: ['jpg', 'jpeg', 'png', 'webp', 'svg'],
+        extensionsMessage: 'Format de fichier invalide',
+        maxSizeMessage: 'Fichier trop volumineux (max: 2 Mo)'
+    )]
     #[Groups(['write:image'])]
     private ?File $imageFile = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(['read:image', 'write:image', 'read:product'])]
+    #[Groups(['read:image', 'write:image', 'read:product', 'read:category'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+    min: 2,
+    max: 100,
+    minMessage: "Le label doit comporter au moins {{ limit }} caractères",
+    maxMessage: "Le label ne peut pas dépasser {{ limit }} caractères",
+    )]
     private ?string $label = null;
     
     #[ORM\Column(length: 100)]
     #[Groups(['read:image', 'write:image'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+    min: 2,
+    max: 100,
+    minMessage: "La description doit comporter au moins {{ limit }} caractères",
+    maxMessage: "La description ne peut pas dépasser {{ limit }} caractères",
+    )]
     private ?string $description = null;
     
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['read:image', 'read:category', 'read:product'])]
+    #[Groups(['read:image', 'read:category', 'read:product', 'read:category'])]
     private ?string $imgFile = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $createdAt = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $updatedAt = null;
 
     public function __construct()
     {
@@ -111,30 +118,6 @@ class Image
     public function setImgFile(?string $imgFile): static
     {
         $this->imgFile = $imgFile;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeInterface $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeInterface
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?\DateTimeInterface $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
 
         return $this;
     }

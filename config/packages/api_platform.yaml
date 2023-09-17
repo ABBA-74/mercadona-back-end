@@ -1,4 +1,5 @@
 api_platform:
+  show_webby: false
   formats:
     json: ['application/json']
     jsonld: ['application/ld+json']
