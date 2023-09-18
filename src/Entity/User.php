@@ -273,6 +273,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['read:user', 'read:category', 'read:product', 'read:promotion'])]
     public function getFullName(): string
     {
-        return $this->firstname . ' ' . $this->lastname;
+        return ucfirst($this->firstname) . ' ' . ucfirst($this->lastname);
     }
 }

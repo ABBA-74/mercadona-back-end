@@ -83,7 +83,7 @@ class Product
 
     #[ORM\ManyToOne(inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['read:product', 'write:product'])]
+    #[Groups(['read:product'])]
     private ?User $user = null;
 
     #[ORM\ManyToMany(targetEntity: Promotion::class, inversedBy: 'products')]
