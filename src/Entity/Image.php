@@ -22,12 +22,13 @@ use Symfony\Component\Validator\Constraints as Assert;
     denormalizationContext: ['groups' => ['write:image']],
     paginationItemsPerPage: 8
 )]
-#[Get()]
-#[GetCollection()]
+#[Get(security: "is_granted('ROLE_ADMIN')")]
+#[GetCollection(security: "is_granted('ROLE_ADMIN')")]
 #[Post(
+    security: "is_granted('ROLE_ADMIN')",
     inputFormats: ['multipart' => ['multipart/form-data']]
 )]
-#[Delete()]
+#[Delete(security: "is_granted('ROLE_ADMIN')")]
 #[ORM\HasLifecycleCallbacks]
 class Image
 {

@@ -6,8 +6,8 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
 use App\Entity\Traits\CommonDate;
 use App\Repository\PromotionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -23,11 +23,11 @@ use Symfony\Component\Validator\Constraints as Assert;
     denormalizationContext: ['groups' => ['write:promotion']],
     paginationItemsPerPage: 8
 )]
-#[Get()]
-#[GetCollection()]
-#[Post()]
-#[Put()]
-#[Delete()]
+#[Get(security: "is_granted('ROLE_ADMIN')")]
+#[GetCollection(security: "is_granted('ROLE_ADMIN')")]
+#[Post(security: "is_granted('ROLE_ADMIN')")]
+#[Patch(security: "is_granted('ROLE_ADMIN')")]
+#[Delete(security: "is_granted('ROLE_ADMIN')")]
 #[ORM\HasLifecycleCallbacks]
 class Promotion
 {
