@@ -55,7 +55,7 @@ class Category
 
     #[ORM\ManyToOne(inversedBy: 'categories')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['read:category', 'write:category'])]
+    #[Groups(['read:category'])]
     private ?User $user = null;
 
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Product::class)]
