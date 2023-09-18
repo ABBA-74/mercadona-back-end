@@ -9,8 +9,8 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
 use App\Entity\Traits\CommonDate;
 use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -28,9 +28,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 #[Get()]
 #[GetCollection()]
-#[Post()]
-#[Put()]
-#[Delete()]
+#[Post(security: "is_granted('ROLE_ADMIN')")]
+#[Patch(security: "is_granted('ROLE_ADMIN')")]
+#[Delete(security: "is_granted('ROLE_ADMIN')")]
 #[ApiFilter(SearchFilter::class, properties: ['label' => 'partial', 'category' => 'exact'])]
 #[ApiFilter(DateFilter::class, properties: ['createdAt'])]
 #[ORM\HasLifecycleCallbacks]
@@ -72,7 +72,7 @@ class Product
     #[Assert\Type("numeric")]
     private ?string $price = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(cascade: ['persist'])]
     #[Groups(['read:product', 'write:product'])]
     private ?Image $image = null;
 

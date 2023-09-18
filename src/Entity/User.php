@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\ApiProperty;
+use ApiPlatform\Metadata\Patch;
 use App\Entity\Traits\CommonDate;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -23,9 +24,10 @@ use Symfony\Component\Validator\Constraints as Assert;
     denormalizationContext: ['groups' => ['write:user']],
     paginationItemsPerPage: 8
 )]
-#[Get()]
-#[GetCollection()]
-#[Delete()]
+#[Get(security: "is_granted('ROLE_SUPER_ADMIN') or object == user")]
+#[Patch(security: "is_granted('ROLE_SUPER_ADMIN') or object == user")]
+#[GetCollection(security: "is_granted('ROLE_SUPER_ADMIN')")]
+#[Delete(security: "is_granted('ROLE_SUPER_ADMIN')")]
 #[ORM\HasLifecycleCallbacks]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -78,7 +80,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     #[Groups(['read:user'])]
-    private ?array $roles = null;
+    private ?array $roles = [];
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Promotion::class)]
     private Collection $promotions;
