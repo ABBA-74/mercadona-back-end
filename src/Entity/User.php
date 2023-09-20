@@ -73,12 +73,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         maxMessage: "L'e-mail ne peut pas dépasser {{ limit }} caractères",
         )]
     #[Assert\Email(
-    message: "L'adresse e-mail n'est pas valide",
+        message: "L'adresse e-mail n'est pas valide",
     )]
     private ?string $email = null;
     
     #[ORM\Column(length: 255)]
     #[Groups(['write:user'])]
+    #[Assert\Regex(
+        pattern: "/^(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{12,}$/",
+        message: "Le mot de passe doit comporter au moins 12 caractères avec au moins une lettre majuscule, un chiffre et un caractère spécial."
+    )]
     private ?string $password = null;
 
     #[ORM\Column]
