@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Entity\Traits\CommonDate;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -25,8 +26,9 @@ use Symfony\Component\Validator\Constraints as Assert;
     paginationItemsPerPage: 8
 )]
 #[Get(security: "is_granted('ROLE_SUPER_ADMIN') or object == user")]
-#[Patch(security: "is_granted('ROLE_SUPER_ADMIN') or object == user")]
 #[GetCollection(security: "is_granted('ROLE_SUPER_ADMIN')")]
+#[Post(security: "is_granted('ROLE_SUPER_ADMIN')")]
+#[Patch(security: "is_granted('ROLE_SUPER_ADMIN') or object == user")]
 #[Delete(security: "is_granted('ROLE_SUPER_ADMIN')")]
 #[ORM\HasLifecycleCallbacks]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -71,11 +73,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         maxMessage: "L'e-mail ne peut pas dépasser {{ limit }} caractères",
         )]
     #[Assert\Email(
-    message: "L'adresse e-mail n'est pas valide",
+        message: "L'adresse e-mail n'est pas valide",
     )]
     private ?string $email = null;
     
     #[ORM\Column(length: 255)]
+    #[Groups(['write:user'])]
+    #[Assert\Regex(
+        pattern: "/^(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{12,}$/",
+        message: "Le mot de passe doit comporter au moins 12 caractères avec au moins une lettre majuscule, un chiffre et un caractère spécial."
+    )]
     private ?string $password = null;
 
     #[ORM\Column]
