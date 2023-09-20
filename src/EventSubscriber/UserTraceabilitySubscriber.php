@@ -26,14 +26,14 @@ class UserTraceabilitySubscriber implements EventSubscriberInterface
         $method = $event->getRequest()->getMethod();
 
         // Retrieve the current user
-        $user = $this->tokenStorage->getToken()->getUser();
+        $user = $this->tokenStorage->getToken()?->getUser();
 
         // Check if the entity is an instance of Image or User,
         // or if the HTTP method is not one of POST, PATCH, or PUT
         if (
             $entity instanceof Image
             || $entity instanceof User
-            || !in_array($method, [Request::METHOD_POST, Request::METHOD_PATCH,     Request::METHOD_PUT])
+            || !in_array($method, [Request::METHOD_POST, Request::METHOD_PATCH, Request::METHOD_PUT])
         ) {
             return;
         }

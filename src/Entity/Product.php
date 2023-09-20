@@ -66,11 +66,18 @@ class Product
     )]
     private ?string $description = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
+    #[ORM\Column]
     #[Groups(['read:product', 'write:product'])]
     #[Assert\NotBlank]
-    #[Assert\Type("numeric")]
-    private ?string $price = null;
+    private ?float $originalPrice = null;
+    
+    #[ORM\Column(nullable: true)]
+    #[Groups(['read:product'])]
+    private ?float $discountedPrice = null;
+    
+    #[ORM\Column(type: Types::SMALLINT, nullable: true)]
+    #[Groups(['read:product'])]
+    private ?int $currentPromotionPercentage = null;
 
     #[ORM\OneToOne(cascade: ['persist'])]
     #[Groups(['read:product', 'write:product'])]
@@ -125,14 +132,14 @@ class Product
         return $this;
     }
 
-    public function getPrice(): ?string
+    public function getOriginalPrice(): ?float
     {
-        return $this->price;
+        return $this->originalPrice;
     }
 
-    public function setPrice(string $price): static
+    public function setOriginalPrice(float $originalPrice): static
     {
-        $this->price = $price;
+        $this->originalPrice = $originalPrice;
 
         return $this;
     }
@@ -194,6 +201,29 @@ class Product
     public function removePromotion(Promotion $promotion): static
     {
         $this->promotions->removeElement($promotion);
+
+        return $this;
+    }
+
+    public function getDiscountedPrice(): ?float
+    {
+        return $this->discountedPrice;
+    }
+
+    public function setDiscountedPrice(?float $discountedPrice): static
+    {
+        $this->discountedPrice = ($discountedPrice !== null) ? round($discountedPrice, 2) : null;
+        return $this;
+    }
+
+    public function getCurrentPromotionPercentage(): ?int
+    {
+        return $this->currentPromotionPercentage;
+    }
+
+    public function setCurrentPromotionPercentage(?int $currentPromotionPercentage): static
+    {
+        $this->currentPromotionPercentage = $currentPromotionPercentage;
 
         return $this;
     }

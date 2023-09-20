@@ -59,10 +59,12 @@ class Promotion
 
     #[ORM\Column(type: Types::SMALLINT)]
     #[Groups(['read:promotion', 'write:promotion', 'read:product'])]
-    #[Assert\NotBlank]
-    #[Assert\Regex(
-    pattern: "/^(100(\.0)?|[1-9]?\d(\.\d)?)$/",
-    message: "Le format de promotion n'est pas valide. Ex: 50.5",
+    #[Assert\NotNull]
+    #[Assert\Type('integer')]
+    #[Assert\Range(
+        min: 5,
+        max: 80,
+        notInRangeMessage: 'La promotion doit être comprise entre {{ min }}% et {{ max }}%',
     )]
     private ?int $discountPercentage = null;
 

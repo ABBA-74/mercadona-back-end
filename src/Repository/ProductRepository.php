@@ -16,33 +16,43 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ProductRepository extends ServiceEntityRepository
 {
+    private $em;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Product::class);
+        $this->em =  $this->getEntityManager();
     }
 
-//    /**
-//     * @return Product[] Returns an array of Product objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('p.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+    * Saves a product by persisting it to the database.
+    *
+    * @param Product $product The product to save.
+    */
+    public function save(Product $product): void
+    {
+        $this->em->persist($product);
+        $this->em->flush();
+    }
 
-//    public function findOneBySomeField($value): ?Product
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /**
+    * Updates the discount prices of a product.
+    *
+    * @param Product $product The product to update.
+    * @param int|null $discountPercentage The discount percentage to apply (can be null).
+    * @param int|null $discountedPrice The reduced price (can be null).
+    */
+    public function updateDiscountPrice(
+        Product $product,
+        ?float $discountPercentage,
+        ?float $discountedPrice
+    ): void
+    {
+        // Update the product's discount properties
+        $product->setDiscountedPrice($discountedPrice);
+        $product->setCurrentPromotionPercentage($discountPercentage);
+
+        // Flush to persist the changes to the database
+        $this->em->flush();
+    }
 }
