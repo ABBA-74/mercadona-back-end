@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Entity\Traits\CommonDate;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -25,8 +26,9 @@ use Symfony\Component\Validator\Constraints as Assert;
     paginationItemsPerPage: 8
 )]
 #[Get(security: "is_granted('ROLE_SUPER_ADMIN') or object == user")]
-#[Patch(security: "is_granted('ROLE_SUPER_ADMIN') or object == user")]
 #[GetCollection(security: "is_granted('ROLE_SUPER_ADMIN')")]
+#[Post(security: "is_granted('ROLE_SUPER_ADMIN')")]
+#[Patch(security: "is_granted('ROLE_SUPER_ADMIN') or object == user")]
 #[Delete(security: "is_granted('ROLE_SUPER_ADMIN')")]
 #[ORM\HasLifecycleCallbacks]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -76,6 +78,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $email = null;
     
     #[ORM\Column(length: 255)]
+    #[Groups(['write:user'])]
     private ?string $password = null;
 
     #[ORM\Column]
