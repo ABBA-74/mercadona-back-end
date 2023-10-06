@@ -20,10 +20,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     normalizationContext: ['groups' => ['read:category']],
     denormalizationContext: ['groups' => ['write:category']],
-    paginationItemsPerPage: 8
+    paginationEnabled: false
 )]
 #[Get(security: "is_granted('ROLE_ADMIN')")]
-#[GetCollection(security: "is_granted('ROLE_ADMIN')")]
+#[GetCollection()]
 #[Post(security: "is_granted('ROLE_ADMIN')")]
 #[Patch(security: "is_granted('ROLE_ADMIN')")]
 #[Delete(security: "is_granted('ROLE_ADMIN')")]
