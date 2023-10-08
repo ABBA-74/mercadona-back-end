@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Doctrine\Orm\Filter\ExistsFilter;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
@@ -32,7 +34,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[Patch(security: "is_granted('ROLE_ADMIN')")]
 #[Delete(security: "is_granted('ROLE_ADMIN')")]
 #[ApiFilter(SearchFilter::class, properties: ['label' => 'partial', 'category' => 'exact'])]
-#[ApiFilter(DateFilter::class, properties: ['createdAt'])]
+#[ApiFilter(ExistsFilter::class, properties: ['discountedPrice'])]
+#[ApiFilter(OrderFilter::class,
+    properties: ['id', 'currentPromotionPercentage', 'label', 'createdAt'],
+    arguments: ['orderParameterName' => 'order']
+)]
+
 #[ORM\HasLifecycleCallbacks]
 class Product
 {
