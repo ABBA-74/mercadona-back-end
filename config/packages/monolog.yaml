@@ -1,0 +1,76 @@
+monolog:
+  channels:
+    - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
+
+when@dev:
+  monolog:
+    channels: ['api']
+    handlers:
+      api:
+        type: rotating_file
+        path: '%kernel.logs_dir%/api.log'
+        level: debug
+        channels: ['api']
+        max_files: 3 # Save until 3 lastest files
+      main:
+        type: stream
+        path: '%kernel.logs_dir%/%kernel.environment%.log'
+        level: debug
+        channels: ['!event']
+        max_files: 3 # Save until 3 lastest files
+      # uncomment to get logging in your browser
+      # you may have to allow bigger header sizes in your Web server configuration
+      #firephp:
+      #    type: firephp
+      #    level: info
+      #chromephp:
+      #    type: chromephp
+      #    level: info
+      console:
+        type: console
+        process_psr_3_messages: false
+        channels: ['!event', '!doctrine', '!console']
+
+when@test:
+  monolog:
+    handlers:
+      main:
+        type: fingers_crossed
+        action_level: error
+        handler: nested
+        excluded_http_codes: [404, 405]
+        channels: ['!event']
+      nested:
+        type: stream
+        path: '%kernel.logs_dir%/%kernel.environment%.log'
+        level: debug
+
+when@prod:
+  monolog:
+    channels: ['api'] # Define a custom logging channel named 'api'
+    handlers:
+      api:
+        type: rotating_file # Use a rotating file handler
+        path: '%kernel.logs_dir%/api.log' # Path to the log file
+        level: debug # Minimum logging level to record
+        channels: ['api'] # Use the 'api' channel for this handler
+        max_files: 7 # Retain up to 7 log files
+      main:
+        type: fingers_crossed # Log only when a certain level is reached
+        action_level: error # Level that triggers logging
+        handler: nested # Handler to use when triggered
+        excluded_http_codes: [404, 405] # HTTP codes to exclude from triggering
+        buffer_size: 50 # Number of log entries to buffer before writing
+      nested:
+        type: stream # Write logs to a stream
+        path: php://stderr # Stream path (standard error stream in this case)
+        level: debug # Minimum logging level to record
+        formatter: monolog.formatter.json # Format logs as JSON
+      console:
+        type: console # Log to the console
+        process_psr_3_messages: false # Whether to process PSR-3 log messages
+        channels: ['!event', '!doctrine'] # Exclude 'event' and 'doctrine' channels
+      deprecation:
+        type: stream # Write logs to a stream
+        channels: [deprecation] # Use the 'deprecation' channel for this handler
+        path: php://stderr # Stream path (standard error stream in this case)

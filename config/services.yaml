@@ -28,3 +28,29 @@ services:
       - { name: kernel.event_subscriber }
     arguments:
       $tokenLifetime: '%env(JWT_TTL)%'
+
+  App\EventListener\ApiRequestListener:
+    arguments:
+      $apiLogger: '@monolog.logger.api'
+      $requestStack: '@request_stack'
+    tags:
+      - {
+          name: 'kernel.event_listener',
+          event: 'kernel.request',
+          method: 'onKernelRequest',
+        }
+      - {
+          name: 'kernel.event_listener',
+          event: 'kernel.exception',
+          method: 'onKernelException',
+        }
+      - {
+          name: 'kernel.event_listener',
+          event: 'lexik_jwt_authentication.on_authentication_success',
+          method: 'onAuthenticationSuccess',
+        }
+      - {
+          name: 'kernel.event_listener',
+          event: 'lexik_jwt_authentication.on_authentication_failure',
+          method: 'onAuthenticationFailure',
+        }
