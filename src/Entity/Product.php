@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Doctrine\Orm\Filter\ExistsFilter;
@@ -39,6 +40,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     properties: ['id', 'currentPromotionPercentage', 'label', 'createdAt'],
     arguments: ['orderParameterName' => 'order']
 )]
+#[ApiFilter(BooleanFilter::class, properties: ['isActive'])]
 
 #[ORM\HasLifecycleCallbacks]
 class Product
@@ -103,6 +105,10 @@ class Product
     #[ORM\ManyToMany(targetEntity: Promotion::class, inversedBy: 'products')]
     #[Groups(['read:product'])]
     private Collection $promotions;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(['read:product', 'write:product'])]
+    private ?bool $isActive = null;
 
     public function __construct()
     {
@@ -231,6 +237,18 @@ class Product
     public function setCurrentPromotionPercentage(?int $currentPromotionPercentage): static
     {
         $this->currentPromotionPercentage = $currentPromotionPercentage;
+
+        return $this;
+    }
+
+    public function getIsActive(): ?bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(?bool $isActive): static
+    {
+        $this->isActive = $isActive;
 
         return $this;
     }
