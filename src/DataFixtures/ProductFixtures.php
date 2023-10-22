@@ -27,7 +27,8 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
                 ->setCreatedAt($faker->dateTimeBetween('-5 week', '-1 week'))
                 ->setImage($this->getReference('productImage_' . $i))
                 ->setUser($this->getReference('admin_' . $faker->numberBetween(1, 10)))
-                ->setCategory($this->getReference('category_' . $j));
+                ->setCategory($this->getReference('category_' . $j))
+                ->setIsActive($faker->boolean());
 
             if (!($i % 4)) {
                 $j++;

@@ -39,7 +39,7 @@ class Category
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(['read:category', 'write:category', 'read:product'])]
+    #[Groups(['read:category', 'write:category', 'read:product', 'read:product-client'])]
     #[Assert\NotBlank]
     #[Assert\Length(
     min: 2,
