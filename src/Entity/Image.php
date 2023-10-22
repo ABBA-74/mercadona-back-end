@@ -52,7 +52,7 @@ class Image
     private ?File $imageFile = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(['read:image', 'write:image', 'read:product', 'read:category'])]
+    #[Groups(['read:image', 'write:image', 'read:product', 'read:product-client', 'read:category'])]
     #[Assert\NotBlank]
     #[Assert\Length(
     min: 2,
@@ -74,7 +74,7 @@ class Image
     private ?string $description = null;
     
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['read:image', 'read:category', 'read:product', 'read:category'])]
+    #[Groups(['read:image', 'read:category', 'read:product', 'read:product-client', 'read:category'])]
     private ?string $imgFile = null;
 
     public function __construct()
