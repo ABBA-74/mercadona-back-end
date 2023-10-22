@@ -27,20 +27,43 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     normalizationContext: ['groups' => ['read:product']],
     denormalizationContext: ['groups' => ['write:product']],
-    paginationItemsPerPage: 8
+    paginationItemsPerPage: 8,
+    operations: [
+        new GetCollection(
+            uriTemplate: '/products/active',
+            normalizationContext: ['groups' => ['read:product-client']],
+        ),
+        new Get(
+            uriTemplate: '/products/active/{id}',
+            normalizationContext: ['groups' => ['read:product-client']],
+        ),
+        new GetCollection(security: "is_granted('ROLE_ADMIN')"),
+        new Get(security: "is_granted('ROLE_ADMIN')"),
+        new Post(security: "is_granted('ROLE_ADMIN')"),
+        new Patch(security: "is_granted('ROLE_ADMIN')"),
+        new Delete(security: "is_granted('ROLE_ADMIN')")
+    ]
 )]
-#[Get()]
-#[GetCollection()]
-#[Post(security: "is_granted('ROLE_ADMIN')")]
-#[Patch(security: "is_granted('ROLE_ADMIN')")]
-#[Delete(security: "is_granted('ROLE_ADMIN')")]
-#[ApiFilter(SearchFilter::class, properties: ['label' => 'partial', 'category' => 'exact'])]
-#[ApiFilter(ExistsFilter::class, properties: ['discountedPrice'])]
-#[ApiFilter(OrderFilter::class,
+// #[Post(security: "is_granted('ROLE_ADMIN')")]
+// #[Patch(security: "is_granted('ROLE_ADMIN')")]
+// #[Delete(security: "is_granted('ROLE_ADMIN')")]
+#[ApiFilter(
+    SearchFilter::class,
+    properties: ['label' => 'partial', 'category' => 'exact']
+)]
+#[ApiFilter(
+    ExistsFilter::class,
+    properties: ['discountedPrice']
+)]
+#[ApiFilter(
+    OrderFilter::class,
     properties: ['id', 'currentPromotionPercentage', 'label', 'createdAt'],
     arguments: ['orderParameterName' => 'order']
 )]
-#[ApiFilter(BooleanFilter::class, properties: ['isActive'])]
+#[ApiFilter(
+    BooleanFilter::class,
+    properties: ['isActive'=> ['security' => "is_granted('ROLE_ADMIN')"]]
+)]
 
 #[ORM\HasLifecycleCallbacks]
 class Product
@@ -50,11 +73,11 @@ class Product
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['read:product'])]
+    #[Groups(['read:product', 'read:product-client'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(['read:product', 'write:product', 'read:promotion'])]
+    #[Groups(['read:product', 'read:product-client', 'write:product', 'read:promotion'])]
     #[Assert\NotBlank]
     #[Assert\Length(
     min: 2,
@@ -65,7 +88,7 @@ class Product
     private ?string $label = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['read:product', 'write:product'])]
+    #[Groups(['read:product', 'read:product-client', 'write:product'])]
     #[Assert\NotBlank]
     #[Assert\Length(
     min: 2,
@@ -76,25 +99,25 @@ class Product
     private ?string $description = null;
 
     #[ORM\Column]
-    #[Groups(['read:product', 'write:product'])]
+    #[Groups(['read:product', 'read:product-client', 'write:product'])]
     #[Assert\NotBlank]
     private ?float $originalPrice = null;
     
     #[ORM\Column(nullable: true)]
-    #[Groups(['read:product'])]
+    #[Groups(['read:product', 'read:product-client'])]
     private ?float $discountedPrice = null;
     
     #[ORM\Column(type: Types::SMALLINT, nullable: true)]
-    #[Groups(['read:product'])]
+    #[Groups(['read:product', 'read:product-client'])]
     private ?int $currentPromotionPercentage = null;
 
     #[ORM\OneToOne(cascade: ['persist'])]
-    #[Groups(['read:product', 'write:product'])]
+    #[Groups(['read:product', 'read:product-client', 'write:product'])]
     private ?Image $image = null;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['read:product', 'write:product'])]
+    #[Groups(['read:product', 'read:product-client', 'write:product'])]
     private ?Category $category = null;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
