@@ -51,6 +51,7 @@ class AuthenticationSuccessHandler implements EventSubscriberInterface
         $data['fullname'] = $user->getFullName();
         $data['email'] = $user->getEmail();
         $data['roles'] = $user->getRoles();
+        $data['exp'] = time() + $this->tokenLifetime;
 
         $event->setData($data);
     }
