@@ -4,19 +4,16 @@ nelmio_cors:
     allow_origin: ['%env(CORS_ALLOW_ORIGIN)%']
     allow_credentials: true
     allow_methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
-    allow_headers: ['Content-Type', 'Authorization']
+    allow_headers:
+      [
+        'Access-Control-Allow-Origin',
+        'X-Requested-With',
+        'X-HTTP-Method-Override',
+        'Accept',
+        'Content-Type',
+        'Authorization',
+      ]
     expose_headers: ['Link']
     max_age: 3600
   paths:
-    '^/catalogue':
-      allow_methods: ['GET']
-    '^/login':
-      allow_methods: ['POST']
-    '^/nous-contacter':
-      allow_methods: ['POST']
-    '^/profile':
-      allow_methods: ['GET', 'POST']
-    '^/liste-favoris':
-      allow_methods: ['GET', 'POST']
-    '^/dashboard':
-      allow_methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
+    '^/': ~

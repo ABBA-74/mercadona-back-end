@@ -10,10 +10,12 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class AuthenticationSuccessHandler implements EventSubscriberInterface
 {
     private $tokenLifetime;
+    private $domain;
 
-    public function __construct(int $tokenLifetime)
+    public function __construct(int $tokenLifetime, string $domain)
     {
         $this->tokenLifetime = $tokenLifetime;
+        $this->domain = $domain;
     }
     
     public static function getSubscribedEvents()
@@ -31,7 +33,7 @@ class AuthenticationSuccessHandler implements EventSubscriberInterface
                 $event->getData()['token'], // cookie value
                 time() + $this->tokenLifetime, // expiration
                 '/', // path
-                null, // domain, null means that Symfony will generate it on its own.
+                $this->domain, // domain, null means that Symfony will generate it on its own.
                 true, // secure
                 true, // httpOnly
                 false, // raw

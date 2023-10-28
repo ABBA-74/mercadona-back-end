@@ -28,6 +28,7 @@ services:
       - { name: kernel.event_subscriber }
     arguments:
       $tokenLifetime: '%env(JWT_TTL)%'
+      $domain: '%env(DOMAIN_COOKIE_HTTPONLY)%'
 
   App\EventListener\ApiRequestListener:
     arguments:
