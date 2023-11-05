@@ -21,13 +21,16 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     normalizationContext: ['groups' => ['read:promotion']],
     denormalizationContext: ['groups' => ['write:promotion']],
-    paginationItemsPerPage: 8
+    paginationItemsPerPage: 8,
+    operations: [
+        new Get(security: "is_granted('ROLE_ADMIN')"),
+        new GetCollection(security: "is_granted('ROLE_ADMIN')"),
+        new Post(security: "is_granted('ROLE_ADMIN')"),
+        new Patch(security: "is_granted('ROLE_ADMIN')"),
+        new Delete(security: "is_granted('ROLE_ADMIN')")
+    ]
 )]
-#[Get(security: "is_granted('ROLE_ADMIN')")]
-#[GetCollection(security: "is_granted('ROLE_ADMIN')")]
-#[Post(security: "is_granted('ROLE_ADMIN')")]
-#[Patch(security: "is_granted('ROLE_ADMIN')")]
-#[Delete(security: "is_granted('ROLE_ADMIN')")]
+
 #[ORM\HasLifecycleCallbacks]
 class Promotion
 {
