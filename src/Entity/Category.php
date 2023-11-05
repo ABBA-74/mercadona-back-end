@@ -20,13 +20,22 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     normalizationContext: ['groups' => ['read:category']],
     denormalizationContext: ['groups' => ['write:category']],
-    paginationEnabled: false
+    operations: [
+        new GetCollection(
+            paginationEnabled: false,
+        ),
+        new GetCollection(
+            uriTemplate: '/categories/dashboard',
+            paginationItemsPerPage: 8,
+            security: "is_granted('ROLE_ADMIN')"
+        ),
+        new Get(security: "is_granted('ROLE_ADMIN')"),
+        new Post(security: "is_granted('ROLE_ADMIN')"),
+        new Patch(security: "is_granted('ROLE_ADMIN')"),
+        new Delete(security: "is_granted('ROLE_ADMIN')")
+    ]
 )]
-#[Get(security: "is_granted('ROLE_ADMIN')")]
-#[GetCollection()]
-#[Post(security: "is_granted('ROLE_ADMIN')")]
-#[Patch(security: "is_granted('ROLE_ADMIN')")]
-#[Delete(security: "is_granted('ROLE_ADMIN')")]
+
 #[ORM\HasLifecycleCallbacks]
 class Category
 {
