@@ -23,13 +23,16 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     normalizationContext: ['groups' => ['read:user']],
     denormalizationContext: ['groups' => ['write:user']],
-    paginationItemsPerPage: 8
+    paginationItemsPerPage: 8,
+    operations: [
+        new Get(security: "is_granted('ROLE_SUPER_ADMIN') or object == user"),
+        new GetCollection(security: "is_granted('ROLE_SUPER_ADMIN')"),
+        new Post(security: "is_granted('ROLE_SUPER_ADMIN')"),
+        new Patch(security: "is_granted('ROLE_SUPER_ADMIN') or object == user"),
+        new Delete(security: "is_granted('ROLE_SUPER_ADMIN')")
+    ]
 )]
-#[Get(security: "is_granted('ROLE_SUPER_ADMIN') or object == user")]
-#[GetCollection(security: "is_granted('ROLE_SUPER_ADMIN')")]
-#[Post(security: "is_granted('ROLE_SUPER_ADMIN')")]
-#[Patch(security: "is_granted('ROLE_SUPER_ADMIN') or object == user")]
-#[Delete(security: "is_granted('ROLE_SUPER_ADMIN')")]
+
 #[ORM\HasLifecycleCallbacks]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {

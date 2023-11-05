@@ -44,9 +44,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Delete(security: "is_granted('ROLE_ADMIN')")
     ]
 )]
-// #[Post(security: "is_granted('ROLE_ADMIN')")]
-// #[Patch(security: "is_granted('ROLE_ADMIN')")]
-// #[Delete(security: "is_granted('ROLE_ADMIN')")]
+
 #[ApiFilter(
     SearchFilter::class,
     properties: ['label' => 'partial', 'category' => 'exact']
