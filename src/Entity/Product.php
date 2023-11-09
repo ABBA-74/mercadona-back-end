@@ -37,7 +37,10 @@ use Symfony\Component\Validator\Constraints as Assert;
             uriTemplate: '/products/active/{id}',
             normalizationContext: ['groups' => ['read:product-client']],
         ),
-        new GetCollection(security: "is_granted('ROLE_ADMIN')"),
+        new GetCollection(
+            paginationClientItemsPerPage: true,
+            security: "is_granted('ROLE_ADMIN')",
+        ),
         new Get(security: "is_granted('ROLE_ADMIN')"),
         new Post(security: "is_granted('ROLE_ADMIN')"),
         new Patch(security: "is_granted('ROLE_ADMIN')"),
