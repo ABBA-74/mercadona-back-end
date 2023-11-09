@@ -18,3 +18,9 @@ api_platform:
   title: 'API Mercadona'
   description: 'Entreprise dans le milieu du retail'
   version: '1.0.0'
+
+  defaults:
+    pagination_client_enabled: true
+  collection:
+    pagination:
+      enabled_parameter_name: pagination
