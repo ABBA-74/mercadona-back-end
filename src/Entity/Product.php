@@ -134,6 +134,16 @@ class Product
     #[Groups(['read:product', 'write:product'])]
     private ?bool $isActive = null;
 
+    #[Assert\Length(
+        min: 2,
+        max: 300,
+        minMessage: "Les notes internes doit comporter au moins {{ limit }} caractères",
+        maxMessage: "La description ne peut pas dépasser {{ limit }} caractères",
+        )]
+    #[Groups(['read:product', 'write:product'])]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $internalNotes = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
@@ -273,6 +283,18 @@ class Product
     public function setIsActive(?bool $isActive): static
     {
         $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    public function getInternalNotes(): ?string
+    {
+        return $this->internalNotes;
+    }
+
+    public function setInternalNotes(?string $internalNotes): static
+    {
+        $this->internalNotes = $internalNotes;
 
         return $this;
     }
