@@ -6,7 +6,6 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Entity\Traits\CommonDate;
@@ -101,12 +100,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Product::class)]
     private Collection $products;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Address::class)]
+    #[Groups(['read:user', 'write:user'])]
+    private Collection $addresses;
+
     public function __construct()
     {
         $this->promotions = new ArrayCollection();
         $this->categories = new ArrayCollection();
         $this->products = new ArrayCollection();
         $this->createdAt = new \DateTime();
+        $this->addresses = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -279,10 +283,39 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return (string) $this->email;
     }
 
-    #[ApiProperty(types: ["https://schema.org/name"])]
     #[Groups(['read:user', 'read:category', 'read:product', 'read:promotion'])]
     public function getFullName(): string
     {
         return ucfirst($this->firstname) . ' ' . ucfirst($this->lastname);
+    }
+
+    /**
+     * @return Collection<int, Address>
+     */
+    public function getAddresses(): Collection
+    {
+        return $this->addresses;
+    }
+
+    public function addAddress(Address $address): static
+    {
+        if (!$this->addresses->contains($address)) {
+            $this->addresses->add($address);
+            $address->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAddress(Address $address): static
+    {
+        if ($this->addresses->removeElement($address)) {
+            // set the owning side to null (unless already changed)
+            if ($address->getUser() === $this) {
+                $address->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }
