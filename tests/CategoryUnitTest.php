@@ -32,11 +32,13 @@ class CategoryUnitTest extends TestCase
         $date = new \DateTimeImmutable();
 
         $category->setLabel('test')
+            ->setDescription('test')
             ->setIsActive(true)
             ->setCreatedAt($date)
             ->setUpdatedAt($date);
 
             $this->assertNotSame('false', $category->getLabel());
+            $this->assertNotSame('false', $category->getDescription());
             $this->assertNotSame(false, $category->getIsActive());
             $this->assertNotSame(null, $category->getCreatedAt());
             $this->assertNotSame(null, $category->getUpdatedAt());
@@ -47,6 +49,7 @@ class CategoryUnitTest extends TestCase
         $category = new Category();
 
             $this->assertEmpty($category->getLabel());
+            $this->assertEmpty($category->getDescription());
             $this->assertEmpty($category->getUpdatedAt());
     }
 
