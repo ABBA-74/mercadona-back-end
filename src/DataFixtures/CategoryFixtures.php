@@ -24,6 +24,8 @@ class CategoryFixtures extends Fixture implements DependentFixtureInterface
             $category = new Category();
 
             $category->setLabel(ucfirst(str_replace('_', ' ', $categoriesLabels[$i - 1])))
+                ->setDescription($faker->sentence(18))
+                ->setIsActive($faker->boolean())
                 ->setCreatedAt($faker->dateTimeBetween('-8 month', '-1 week'))
                 ->setImage($this->getReference('categoryImage_' . $i))
                 ->setUser($this->getReference('admin_' . $faker->numberBetween(1,10)));
