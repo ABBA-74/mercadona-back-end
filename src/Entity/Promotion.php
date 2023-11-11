@@ -24,7 +24,9 @@ use Symfony\Component\Validator\Constraints as Assert;
     paginationItemsPerPage: 8,
     operations: [
         new Get(security: "is_granted('ROLE_ADMIN')"),
-        new GetCollection(security: "is_granted('ROLE_ADMIN')"),
+        new GetCollection(
+            paginationClientItemsPerPage: true,
+            security: "is_granted('ROLE_ADMIN')"),
         new Post(security: "is_granted('ROLE_ADMIN')"),
         new Patch(security: "is_granted('ROLE_ADMIN')"),
         new Delete(security: "is_granted('ROLE_ADMIN')")

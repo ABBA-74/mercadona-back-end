@@ -20,13 +20,14 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     normalizationContext: ['groups' => ['read:category']],
     denormalizationContext: ['groups' => ['write:category']],
+    paginationItemsPerPage: 8,
     operations: [
         new GetCollection(
             paginationEnabled: false,
         ),
         new GetCollection(
+            paginationClientItemsPerPage: true,
             uriTemplate: '/categories/dashboard',
-            paginationItemsPerPage: 8,
             security: "is_granted('ROLE_ADMIN')"
         ),
         new Get(security: "is_granted('ROLE_ADMIN')"),
