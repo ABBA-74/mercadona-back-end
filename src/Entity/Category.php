@@ -71,6 +71,10 @@ class Category
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Product::class)]
     private Collection $products;
 
+    #[Groups(['read:category', 'write:category'])]
+    #[ORM\Column(nullable: true)]
+    private ?bool $isActive = null;
+
     public function __construct()
     {
         $this->products = new ArrayCollection();
@@ -144,6 +148,18 @@ class Category
                 $product->setCategory(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getIsActive(): ?bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(?bool $isActive): static
+    {
+        $this->isActive = $isActive;
 
         return $this;
     }
