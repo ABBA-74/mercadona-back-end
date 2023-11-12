@@ -82,6 +82,33 @@ class Promotion
     #[Groups(['read:promotion', 'write:promotion'])]
     private Collection $products;
 
+    #[ORM\Column(length: 100)]
+    #[Assert\Length(
+        min: 2,
+        max: 100,
+        minMessage: "Le champ doit comporter au moins {{ limit }} caractères",
+        maxMessage: "Le champ ne peut pas dépasser {{ limit }} caractères",
+        )]
+    private ?string $name = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\Length(
+        min: 2,
+        max: 300,
+        minMessage: "Le champ doit comporter au moins {{ limit }} caractères",
+        maxMessage: "Le champ ne peut pas dépasser {{ limit }} caractères",
+        )]
+    private ?string $description = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\Length(
+        min: 2,
+        max: 300,
+        minMessage: "Le champ doit comporter au moins {{ limit }} caractères",
+        maxMessage: "Le champ ne peut pas dépasser {{ limit }} caractères",
+        )]
+    private ?string $conditions = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
@@ -164,6 +191,42 @@ class Promotion
         if ($this->products->removeElement($product)) {
             $product->removePromotion($this);
         }
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getConditions(): ?string
+    {
+        return $this->conditions;
+    }
+
+    public function setConditions(?string $conditions): static
+    {
+        $this->conditions = $conditions;
 
         return $this;
     }
