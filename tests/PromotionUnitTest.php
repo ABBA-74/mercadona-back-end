@@ -14,12 +14,18 @@ class PromotionUnitTest extends TestCase
         $promotion = new Promotion();
         $date = new \DateTimeImmutable();
 
-        $promotion->setStartDate($date)
+        $promotion->setName('test')
+            ->setDescription(('test'))
+            ->setConditions(('test'))
+            ->setStartDate($date)
             ->setEndDate($date)
             ->setDiscountPercentage(33)
             ->setCreatedAt($date)
             ->setUpdatedAt($date);
 
+        $this->assertSame('test', $promotion->getName());
+        $this->assertSame('test', $promotion->getDescription());
+        $this->assertSame('test', $promotion->getConditions());
         $this->assertSame($date, $promotion->getStartDate());
         $this->assertSame($date, $promotion->getEndDate());
         $this->assertSame(33, $promotion->getDiscountPercentage());
@@ -32,12 +38,18 @@ class PromotionUnitTest extends TestCase
         $promotion = new Promotion();
         $date = new \DateTimeImmutable();
 
-        $promotion->setStartDate($date)
+        $promotion->setName('test')
+        ->setDescription(('test'))
+        ->setConditions(('test'))
+        ->setStartDate($date)
         ->setEndDate($date)
         ->setDiscountPercentage(33)
         ->setCreatedAt($date)
         ->setUpdatedAt($date);
 
+        $this->assertNotSame('false', $promotion->getName());
+        $this->assertNotSame('false', $promotion->getDescription());
+        $this->assertNotSame('false', $promotion->getConditions());
         $this->assertNotSame(null, $promotion->getStartDate());
         $this->assertNotSame(null, $promotion->getEndDate());
         $this->assertNotSame(66, $promotion->getDiscountPercentage());
@@ -49,6 +61,9 @@ class PromotionUnitTest extends TestCase
     {
         $promotion = new Promotion();
 
+            $this->assertEmpty($promotion->getName());
+            $this->assertEmpty($promotion->getDescription());
+            $this->assertEmpty($promotion->getConditions());
             $this->assertEmpty($promotion->getStartDate());
             $this->assertEmpty($promotion->getEndDate());
             $this->assertEmpty($promotion->getDiscountPercentage());
