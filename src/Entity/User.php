@@ -138,7 +138,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Address::class)]
     #[Groups(['read:user', 'write:user'])]
     private Collection $addresses;
-    
+
     public function __construct()
     {
         $this->promotions = new ArrayCollection();
@@ -402,7 +402,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function isIsActive(): ?bool
+    public function getIsActive(): ?bool
     {
         return $this->isActive;
     }
