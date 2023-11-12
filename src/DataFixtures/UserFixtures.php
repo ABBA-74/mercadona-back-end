@@ -22,8 +22,17 @@ class UserFixtures extends Fixture
         for($i = 1; $i <= 10; $i++) {
             $user = new User();
 
-            $user->setFirstname($faker->unique()->firstname())
+            $user->setGender($faker->randomElement(['Mr', 'Mme']))
+                ->setFirstname($faker->unique()->firstname())
                 ->setLastname($faker->unique()->lastName())
+                ->setDateOfBirth(
+                    \DateTimeImmutable::createFromMutable(
+                        $faker->dateTimeBetween('-65 year', '-20 year')
+                        )
+                )
+                ->setPhone('06 ' . $faker->bothify('## ## ## ##'))
+                ->setInternalNotes($faker->sentence(28))
+                ->setIsActive($faker->boolean())
                 ->setCreatedAt($faker->dateTimeBetween('-6 month', '-5 month'))
                 ->setEmail(
                     sprintf('%s.%s@%s',
