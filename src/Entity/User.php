@@ -99,7 +99,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(nullable: true)]
     #[Groups(['read:user', 'write:user'])]
-    #[Assert\LessThan('today')]
+    #[Assert\LessThan("-16 years", message: 'La personne doit avoir au moins 16 ans')]
     private ?\DateTimeImmutable $dateOfBirth = null;
 
     #[ORM\Column(length: 20, nullable: true)]
@@ -139,6 +139,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['read:user', 'write:user'])]
     private Collection $addresses;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Job::class)]
+    private Collection $jobs;
+
     public function __construct()
     {
         $this->promotions = new ArrayCollection();
@@ -146,6 +149,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->products = new ArrayCollection();
         $this->createdAt = new \DateTime();
         $this->addresses = new ArrayCollection();
+        $this->jobs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -410,6 +414,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsActive(?bool $isActive): static
     {
         $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Job>
+     */
+    public function getJobs(): Collection
+    {
+        return $this->jobs;
+    }
+
+    public function addJob(Job $job): static
+    {
+        if (!$this->jobs->contains($job)) {
+            $this->jobs->add($job);
+            $job->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeJob(Job $job): static
+    {
+        if ($this->jobs->removeElement($job)) {
+            // set the owning side to null (unless already changed)
+            if ($job->getUser() === $this) {
+                $job->setUser(null);
+            }
+        }
 
         return $this;
     }
