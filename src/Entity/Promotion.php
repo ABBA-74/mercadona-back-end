@@ -16,6 +16,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: PromotionRepository::class)]
 #[ApiResource(
@@ -44,21 +45,51 @@ class Promotion
     #[Groups(['read:promotion'])]
     private ?int $id = null;
 
+    #[ORM\Column(length: 100)]
+    #[Groups(['read:promotion', 'write:promotion', 'read:product'])]
+    #[Assert\Length(
+        min: 2,
+        max: 100,
+        minMessage: "Le champ doit comporter au moins {{ limit }} caractères",
+        maxMessage: "Le champ ne peut pas dépasser {{ limit }} caractères",
+        )]
+    private ?string $name = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['read:promotion', 'write:promotion', 'read:product'])]
+    #[Assert\Length(
+        min: 2,
+        max: 300,
+        minMessage: "Le champ doit comporter au moins {{ limit }} caractères",
+        maxMessage: "Le champ ne peut pas dépasser {{ limit }} caractères",
+        )]
+    private ?string $description = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['read:promotion', 'write:promotion', 'read:product'])]
+    #[Assert\Length(
+        min: 2,
+        max: 300,
+        minMessage: "Le champ doit comporter au moins {{ limit }} caractères",
+        maxMessage: "Le champ ne peut pas dépasser {{ limit }} caractères",
+        )]
+    private ?string $conditions = null;
+
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups(['read:promotion', 'write:promotion', 'read:product'])]
     #[Assert\Range(
-        min: 'now',
+        min: '+1 day',
         max: '+2 year',
-        notInRangeMessage: "Choisir une date entre aujourd'hui et 2 an maximum",
+        notInRangeMessage: "Choisir une date entre demain et 2 an maximum",
     )]
     private ?\DateTimeInterface $startDate = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups(['read:promotion', 'write:promotion', 'read:product'])]
     #[Assert\Range(
-        min: 'now',
+        min: '+1 day',
         max: '+2 year',
-        notInRangeMessage: "Choisir une date entre aujourd'hui et 2 an maximum"
+        notInRangeMessage: "Choisir une date entre demain et 2 an maximum"
     )]
     private ?\DateTimeInterface $endDate = null;
 
@@ -82,32 +113,16 @@ class Promotion
     #[Groups(['read:promotion', 'write:promotion'])]
     private Collection $products;
 
-    #[ORM\Column(length: 100)]
-    #[Assert\Length(
-        min: 2,
-        max: 100,
-        minMessage: "Le champ doit comporter au moins {{ limit }} caractères",
-        maxMessage: "Le champ ne peut pas dépasser {{ limit }} caractères",
-        )]
-    private ?string $name = null;
-
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Assert\Length(
-        min: 2,
-        max: 300,
-        minMessage: "Le champ doit comporter au moins {{ limit }} caractères",
-        maxMessage: "Le champ ne peut pas dépasser {{ limit }} caractères",
-        )]
-    private ?string $description = null;
-
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Assert\Length(
-        min: 2,
-        max: 300,
-        minMessage: "Le champ doit comporter au moins {{ limit }} caractères",
-        maxMessage: "Le champ ne peut pas dépasser {{ limit }} caractères",
-        )]
-    private ?string $conditions = null;
+    // Check that endDate is after startDate
+    #[Assert\Callback]
+    public function validate(ExecutionContextInterface $context): void
+    {
+        if ($this->endDate <= $this->startDate) {
+            $context->buildViolation('La date de fin doit être postérieure à la date de début.')
+                    ->atPath('endDate')
+                    ->addViolation();
+        }
+    }
 
     public function __construct()
     {
