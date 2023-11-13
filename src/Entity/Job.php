@@ -86,7 +86,7 @@ class Job
     private ?string $employmentType = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    #[Groups(['read:job', 'write:job'])]
+    #[Groups(['read:job', 'write:job', 'read:user', 'write:user'])]
     #[Assert\LessThanOrEqual('today', message: "La date d'embauche doit être aujourd'hui ou dans le passé")]
     private ?\DateTimeInterface $hireDate = null;
 
