@@ -18,6 +18,7 @@ class ProductUnitTest extends TestCase
 
         $product->setLabel('test')
             ->setDescription('test')
+            ->setInternalNotes('test')
             ->setIsActive(true)
             ->setOriginalPrice(3.33)
             ->setCreatedAt($date)
@@ -25,6 +26,7 @@ class ProductUnitTest extends TestCase
 
         $this->assertSame('test', $product->getLabel());
         $this->assertSame('test', $product->getDescription());
+        $this->assertSame('test', $product->getInternalNotes());
         $this->assertSame(true, $product->getIsActive());
         $this->assertSame(3.33, $product->getOriginalPrice());
         $this->assertSame($date, $product->getCreatedAt());
@@ -38,6 +40,7 @@ class ProductUnitTest extends TestCase
 
         $product->setLabel('test')
             ->setDescription('test')
+            ->setInternalNotes('test')
             ->setIsActive(true)
             ->setOriginalPrice(3.33)
             ->setCreatedAt($date)
@@ -45,6 +48,7 @@ class ProductUnitTest extends TestCase
 
             $this->assertNotSame('false', $product->getLabel());
             $this->assertNotSame('false', $product->getDescription());
+            $this->assertNotSame('false', $product->getInternalNotes());
             $this->assertNotSame(false, $product->getIsActive());
             $this->assertNotSame('6.66', $product->getOriginalPrice());
             $this->assertNotSame(null, $product->getCreatedAt());
@@ -57,6 +61,7 @@ class ProductUnitTest extends TestCase
 
             $this->assertEmpty($product->getLabel());
             $this->assertEmpty($product->getDescription());
+            $this->assertEmpty($product->getInternalNotes());
             $this->assertEmpty($product->getOriginalPrice());
             $this->assertEmpty($product->getUpdatedAt());
     }

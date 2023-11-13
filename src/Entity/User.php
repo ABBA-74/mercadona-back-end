@@ -6,13 +6,13 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Entity\Traits\CommonDate;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -45,7 +45,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
-    #[Groups(['write:user'])]
+    #[Groups(['read:user', 'write:user'])]
     #[Assert\NotBlank]
     #[Assert\Length(
     min: 2,
@@ -56,7 +56,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $firstname = null;
 
     #[ORM\Column(length: 50)]
-    #[Groups(['write:user'])]
+    #[Groups(['read:user', 'write:user'])]
     #[Assert\NotBlank]
     #[Assert\Length(
     min: 2,
@@ -92,6 +92,40 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['read:user'])]
     private ?array $roles = [];
 
+    #[ORM\Column(length: 10)]
+    #[Groups(['read:user', 'write:user'])]
+    #[Assert\Choice(choices: ['Mr', 'Mme'], message: 'Choisir le genre Mr ou Mme')]
+    private ?string $gender = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(['read:user', 'write:user'])]
+    #[Assert\LessThan("-16 years", message: 'La personne doit avoir au moins 16 ans')]
+    private ?\DateTimeImmutable $dateOfBirth = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    #[Groups(['read:user', 'write:user'])]
+    #[Assert\Length(
+        min: 5,
+        max: 100,
+        minMessage: "Le champ doit comporter au moins {{ limit }} caractères",
+        maxMessage: "Le champ ne peut pas dépasser {{ limit }} caractères",
+        )]
+    private ?string $phone = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['read:user', 'write:user'])]
+    #[Assert\Length(
+        min: 5,
+        max: 300,
+        minMessage: "Le champ doit comporter au moins {{ limit }} caractères",
+        maxMessage: "Le champ ne peut pas dépasser {{ limit }} caractères",
+        )]
+    private ?string $internalNotes = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(['read:user', 'write:user'])]
+    private ?bool $isActive = null;
+
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Promotion::class)]
     private Collection $promotions;
 
@@ -101,12 +135,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Product::class)]
     private Collection $products;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Address::class)]
+    #[Groups(['read:user', 'write:user'])]
+    private Collection $addresses;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Job::class)]
+    #[Groups(['read:user', 'write:user'])]
+    private Collection $jobs;
+
     public function __construct()
     {
         $this->promotions = new ArrayCollection();
         $this->categories = new ArrayCollection();
         $this->products = new ArrayCollection();
         $this->createdAt = new \DateTime();
+        $this->addresses = new ArrayCollection();
+        $this->jobs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -279,10 +323,129 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return (string) $this->email;
     }
 
-    #[ApiProperty(types: ["https://schema.org/name"])]
     #[Groups(['read:user', 'read:category', 'read:product', 'read:promotion'])]
     public function getFullName(): string
     {
         return ucfirst($this->firstname) . ' ' . ucfirst($this->lastname);
+    }
+
+    /**
+     * @return Collection<int, Address>
+     */
+    public function getAddresses(): Collection
+    {
+        return $this->addresses;
+    }
+
+    public function addAddress(Address $address): static
+    {
+        if (!$this->addresses->contains($address)) {
+            $this->addresses->add($address);
+            $address->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAddress(Address $address): static
+    {
+        if ($this->addresses->removeElement($address)) {
+            // set the owning side to null (unless already changed)
+            if ($address->getUser() === $this) {
+                $address->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getGender(): ?string
+    {
+        return $this->gender;
+    }
+
+    public function setGender(string $gender): static
+    {
+        $this->gender = $gender;
+
+        return $this;
+    }
+
+    public function getDateOfBirth(): ?\DateTimeImmutable
+    {
+        return $this->dateOfBirth;
+    }
+
+    public function setDateOfBirth(?\DateTimeImmutable $dateOfBirth): static
+    {
+        $this->dateOfBirth = $dateOfBirth;
+
+        return $this;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): static
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function getInternalNotes(): ?string
+    {
+        return $this->internalNotes;
+    }
+
+    public function setInternalNotes(?string $internalNotes): static
+    {
+        $this->internalNotes = $internalNotes;
+
+        return $this;
+    }
+
+    public function getIsActive(): ?bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(?bool $isActive): static
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Job>
+     */
+    public function getJobs(): Collection
+    {
+        return $this->jobs;
+    }
+
+    public function addJob(Job $job): static
+    {
+        if (!$this->jobs->contains($job)) {
+            $this->jobs->add($job);
+            $job->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeJob(Job $job): static
+    {
+        if ($this->jobs->removeElement($job)) {
+            // set the owning side to null (unless already changed)
+            if ($job->getUser() === $this) {
+                $job->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }

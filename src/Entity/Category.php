@@ -12,6 +12,7 @@ use App\Entity\Traits\CommonDate;
 use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -20,13 +21,14 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     normalizationContext: ['groups' => ['read:category']],
     denormalizationContext: ['groups' => ['write:category']],
+    paginationItemsPerPage: 8,
     operations: [
         new GetCollection(
             paginationEnabled: false,
         ),
         new GetCollection(
+            paginationClientItemsPerPage: true,
             uriTemplate: '/categories/dashboard',
-            paginationItemsPerPage: 8,
             security: "is_granted('ROLE_ADMIN')"
         ),
         new Get(security: "is_granted('ROLE_ADMIN')"),
@@ -69,6 +71,20 @@ class Category
 
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Product::class)]
     private Collection $products;
+
+    #[Groups(['read:category', 'write:category'])]
+    #[ORM\Column(nullable: true)]
+    private ?bool $isActive = null;
+
+    #[Assert\Length(
+        min: 2,
+        max: 200,
+        minMessage: "La description doit comporter au moins {{ limit }} caractères",
+        maxMessage: "La description ne peut pas dépasser {{ limit }} caractères",
+        )]
+    #[Groups(['read:category', 'write:category'])]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description = null;
 
     public function __construct()
     {
@@ -143,6 +159,30 @@ class Category
                 $product->setCategory(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getIsActive(): ?bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(?bool $isActive): static
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
 
         return $this;
     }

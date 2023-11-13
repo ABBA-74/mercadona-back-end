@@ -9,11 +9,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
 trait CommonDate
 {
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(['read:user', 'read:promotion', 'read:product', 'read:image', 'read:category'])]
+    #[Groups(['read:user', 'read:promotion', 'read:product', 'read:image', 'read:category', 'read:address'])]
     private ?\DateTimeInterface $createdAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    #[Groups(['read:user', 'read:promotion', 'read:product', 'read:image', 'read:category'])]
+    #[Groups(['read:user', 'read:promotion', 'read:product', 'read:image', 'read:category', 'read:address'])]
     private ?\DateTimeInterface $updatedAt = null;
 
     public function getCreatedAt(): ?\DateTimeInterface

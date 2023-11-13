@@ -83,8 +83,8 @@ class Product
     #[Assert\Length(
     min: 2,
     max: 100,
-    minMessage: "Le label doit comporter au moins {{ limit }} caractères",
-    maxMessage: "Le label ne peut pas dépasser {{ limit }} caractères",
+    minMessage: "Le champ doit comporter au moins {{ limit }} caractères",
+    maxMessage: "Le champ ne peut pas dépasser {{ limit }} caractères",
     )]
     private ?string $label = null;
 
@@ -94,8 +94,8 @@ class Product
     #[Assert\Length(
     min: 2,
     max: 200,
-    minMessage: "La description doit comporter au moins {{ limit }} caractères",
-    maxMessage: "La description ne peut pas dépasser {{ limit }} caractères",
+    minMessage: "Le champ doit comporter au moins {{ limit }} caractères",
+    maxMessage: "Le champ ne peut pas dépasser {{ limit }} caractères",
     )]
     private ?string $description = null;
 
@@ -133,6 +133,16 @@ class Product
     #[ORM\Column(nullable: true)]
     #[Groups(['read:product', 'write:product'])]
     private ?bool $isActive = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\Length(
+        min: 2,
+        max: 300,
+        minMessage: "Le champ doit comporter au moins {{ limit }} caractères",
+        maxMessage: "Le champ ne peut pas dépasser {{ limit }} caractères",
+        )]
+    #[Groups(['read:product', 'write:product'])]
+    private ?string $internalNotes = null;
 
     public function __construct()
     {
@@ -273,6 +283,18 @@ class Product
     public function setIsActive(?bool $isActive): static
     {
         $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    public function getInternalNotes(): ?string
+    {
+        return $this->internalNotes;
+    }
+
+    public function setInternalNotes(?string $internalNotes): static
+    {
+        $this->internalNotes = $internalNotes;
 
         return $this;
     }
