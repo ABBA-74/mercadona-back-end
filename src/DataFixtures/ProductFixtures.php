@@ -25,7 +25,7 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
                 ->setDescription($productDescription)
                 ->setInternalNotes($faker->sentence(18))
                 ->setOriginalPrice($faker->randomFloat(2, 3, 8))
-                ->setCreatedAt($faker->dateTimeBetween('-5 week', '-1 week'))
+                ->setCreatedAt($faker->dateTimeBetween('-5 month', '-1 month'))
                 ->setImage($this->getReference('productImage_' . $i))
                 ->setUser($this->getReference('admin_' . $faker->numberBetween(1, 10)))
                 ->setCategory($this->getReference('category_' . $j))
