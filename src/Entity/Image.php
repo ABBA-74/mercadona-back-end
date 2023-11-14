@@ -76,7 +76,7 @@ class Image
     #[Assert\NotBlank]
     #[Assert\Length(
     min: 2,
-    max: 100,
+    max: 255,
     minMessage: "La description doit comporter au moins {{ limit }} caractères",
     maxMessage: "La description ne peut pas dépasser {{ limit }} caractères",
     )]

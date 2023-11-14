@@ -78,7 +78,7 @@ class Category
 
     #[Assert\Length(
         min: 2,
-        max: 200,
+        max: 255,
         minMessage: "La description doit comporter au moins {{ limit }} caractères",
         maxMessage: "La description ne peut pas dépasser {{ limit }} caractères",
         )]
