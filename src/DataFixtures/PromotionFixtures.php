@@ -20,10 +20,10 @@ class PromotionFixtures extends Fixture implements DependentFixtureInterface
             $promotion->setName($faker->sentence(3))
                 ->setDescription($faker->sentence(24))
                 ->setConditions($faker->sentence(24))
-                ->setStartDate($faker->dateTimeBetween('1 week', '1 month'))
+                ->setStartDate($faker->dateTimeBetween('-3 week', '1 week'))
                 ->setEndDate($faker->dateTimeBetween('1 month', '4 month'))
                 ->setDiscountPercentage($faker->numberBetween(10, 50))
-                ->setCreatedAt($faker->dateTimeBetween('-3 week', '-4 days'))
+                ->setCreatedAt($faker->dateTimeBetween('-4 week', '-3 week'))
                 ->setUser($this->getReference('admin_' . $faker->numberBetween(1, 10)));
             $this->addReference('promotion_' . $i, $promotion);
 
