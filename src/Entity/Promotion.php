@@ -28,8 +28,12 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
         new GetCollection(
             paginationClientItemsPerPage: true,
             security: "is_granted('ROLE_ADMIN')"),
-        new Post(security: "is_granted('ROLE_ADMIN')"),
-        new Patch(security: "is_granted('ROLE_ADMIN')"),
+        new Post(
+            security: "is_granted('ROLE_ADMIN')",
+        ),
+        new Patch(
+            security: "is_granted('ROLE_ADMIN')",
+            ),
         new Delete(security: "is_granted('ROLE_ADMIN')")
     ]
 )]
@@ -58,9 +62,7 @@ class Promotion
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['read:promotion', 'write:promotion', 'read:product'])]
     #[Assert\Length(
-        min: 2,
         max: 300,
-        minMessage: "Le champ doit comporter au moins {{ limit }} caractères",
         maxMessage: "Le champ ne peut pas dépasser {{ limit }} caractères",
         )]
     private ?string $description = null;
@@ -68,29 +70,17 @@ class Promotion
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['read:promotion', 'write:promotion', 'read:product'])]
     #[Assert\Length(
-        min: 2,
         max: 300,
-        minMessage: "Le champ doit comporter au moins {{ limit }} caractères",
         maxMessage: "Le champ ne peut pas dépasser {{ limit }} caractères",
         )]
     private ?string $conditions = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups(['read:promotion', 'write:promotion', 'read:product'])]
-    #[Assert\Range(
-        min: '+1 day',
-        max: '+2 year',
-        notInRangeMessage: "Choisir une date entre demain et 2 an maximum",
-    )]
     private ?\DateTimeInterface $startDate = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups(['read:promotion', 'write:promotion', 'read:product'])]
-    #[Assert\Range(
-        min: '+1 day',
-        max: '+2 year',
-        notInRangeMessage: "Choisir une date entre demain et 2 an maximum"
-    )]
     private ?\DateTimeInterface $endDate = null;
 
     #[ORM\Column(type: Types::SMALLINT)]
@@ -113,15 +103,29 @@ class Promotion
     #[Groups(['read:promotion', 'write:promotion'])]
     private Collection $products;
 
-    // Check that endDate is after startDate
+    // Custom validation for startDate and endDate
     #[Assert\Callback]
-    public function validate(ExecutionContextInterface $context): void
+    public function validateDates(ExecutionContextInterface $context): void
     {
-        if ($this->endDate <= $this->startDate) {
+        // $minDate = new \DateTime('tomorrow midnight');
+        // $maxDate = new \DateTime('+2 years midnight');
+
+        if ($this->getEndDate() <= $this->getStartDate()) {
             $context->buildViolation('La date de fin doit être postérieure à la date de début.')
                     ->atPath('endDate')
                     ->addViolation();
         }
+
+        // if ($this->getStartDate() < $minDate || $this->getStartDate() > $maxDate) {
+        //     $context->buildViolation('Choisir une date entre demain et 2 an maximum')
+        //             ->atPath('startDate')
+        //             ->addViolation();
+        // }
+        // if ($this->getEndDate() < $minDate || $this->getEndDate() > $maxDate) {
+        //     $context->buildViolation('Choisir une date entre demain et 2 an maximum')
+        //             ->atPath('endDate')
+        //             ->addViolation();
+        // }
     }
 
     public function __construct()
